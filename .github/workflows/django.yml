@@ -39,7 +39,7 @@ jobs:
         project_id: e00049-project-workspace
 
     - name: Configure Docker for GAR
-      run: gcloud auth configure-docker
+      run: gcloud auth configure-docker us-central1-docker.pkg.dev
 
     - name: Docker Build and Push
       if: env.Docker_Build_Push == 'yes'
