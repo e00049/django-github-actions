@@ -11,7 +11,6 @@ jobs:
     environment: dev
 
     env:
-      # GCLOUD_SERVICE_ACCOUNT: ${{ secrets.GCLOUD_SERVICE_ACCOUNT }}
       GAR_LOCATION: us-central1 
       GKE_CLUSTER: cluster-1    
       GKE_ZONE: us-central1-c   
@@ -39,10 +38,17 @@ jobs:
       with:
         project_id: e00049-project-workspace
 
-    # gcloud container clusters get-credentials cluster-1 --zone us-central1-c --project e00049-project-workspace
-    - name: Authenticate Kubernetes Cluster
+    - name: Configure Docker for GAR
+      run: gcloud auth configure-docker
+
+    - name: Docker Build and Push
+      if: env.Docker_Build_Push == 'yes'
       run: |
-        gcloud artifacts repositories list --location=us-central1
+        docker rmi us-central1-docker.pkg.dev/e00049-project-workspace/django/django:latest || true
+        docker build -t us-central1-docker.pkg.dev/e00049-project-workspace/django/django:latest -f Dockerfile.django .
+        docker tag us-central1-docker.pkg.dev/e00049-project-workspace/django/django:latest us-central1-docker.pkg.dev/e00049-project-workspace/django/django:${{ github.run_number }}
+        docker push us-central1-docker.pkg.dev/e00049-project-workspace/django/django:${{ github.run_number }}
+        docker rmi us-central1-docker.pkg.dev/e00049-project-workspace/django/django:${{ github.run_number }}
 
     # Get the GKE credentials so we can deploy to the cluster
     - name: Set up GKE credentials
@@ -51,9 +57,13 @@ jobs:
         cluster_name: ${{ env.GKE_CLUSTER }}
         location: ${{ env.GKE_ZONE }}
 
-    # gcloud container clusters get-credentials cluster-1 --zone us-central1-c --project e00049-project-workspace
-    - name: Authenticate Kubernetes Cluster
+    - name: Fresh Deployment Kubernetes Django
+      if: env.Fresh_Deploy_Django == 'yes'
       run: |
-        if [ -f ~/.kube/config ]; then
-          cat ~/.kube/config
-        fi
+        sed -i s/latest/${{ github.run_number }}/g deployments/backend/backend-04-django-deployment.yaml
+        kubectl apply -f deployments/namespace/01-backend-ns.yml
+        kubectl apply -f deployments/backend/
+
+    - name: Update Deployment Kubernetes Django
+      if: env.Update_Deploy_Django == 'yes'
+      run: kubectl -n dev set image deployment/django-deployment django=us-central1-docker.pkg.dev/e00049-project-workspace/django/django:${{ github.run_number }}
