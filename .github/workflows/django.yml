@@ -10,10 +10,11 @@ jobs:
     runs-on: ubuntu-latest
 
   steps:
-    - name: Checkout SCM for Django
-      uses: actions/checkout@2
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4  
       with:
-        ref: dev
+        ref: dev            
 
     - name: Read Config.JSON file
       id: read_config
