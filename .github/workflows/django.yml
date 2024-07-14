@@ -16,7 +16,6 @@ jobs:
       GKE_CLUSTER: cluster-1    
       GKE_ZONE: us-central1-c   
   
-
     steps:
     - name: Checkout
       uses: actions/checkout@v4
@@ -38,7 +37,7 @@ jobs:
 
     - name: Authenticate Kubernetes Cluster
       run: |
-      gcloud container clusters get-credentials cluster-1 --zone us-central1-c --project e00049-project-workspace
-      if [ -f ~/.kube/config ]; then
-       cat ~/.kube/config
-      fi 
+        gcloud container clusters get-credentials cluster-1 --zone us-central1-c --project e00049-project-workspace
+        if [ -f ~/.kube/config ]; then
+          cat ~/.kube/config
+        fi
