@@ -11,7 +11,7 @@ jobs:
     environment: dev
 
     env:
-      GCLOUD_SERVICE_ACCOUNT: ${{ secrets.GCLOUD_SERVICE_ACCOUNT }}
+      # GCLOUD_SERVICE_ACCOUNT: ${{ secrets.GCLOUD_SERVICE_ACCOUNT }}
       GAR_LOCATION: us-central1 
       GKE_CLUSTER: cluster-1    
       GKE_ZONE: us-central1-c   
@@ -29,10 +29,14 @@ jobs:
         config=$(cat config.json | jq -r '. | to_entries | map("\(.key)=\(.value)") | .[]')
         echo "$config" >> $GITHUB_ENV
     
+    - name: Authenticate to Google Cloud
+      uses: google-github-actions/auth@v1
+      with:
+        credentials_json: ${{ secrets.GCLOUD_SERVICE_ACCOUNT }}
+    
     - name: Set up Google Cloud SDK
       uses: google-github-actions/setup-gcloud@v1
       with:
-        service_account_key: ${{ secrets.GCLOUD_SERVICE_ACCOUNT }}
         project_id: e00049-project-workspace
 
     - name: Authenticate Kubernetes Cluster
