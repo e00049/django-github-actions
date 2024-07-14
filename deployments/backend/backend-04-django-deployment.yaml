@@ -21,7 +21,7 @@ spec:
         image: busybox
         command: ["sleep", "5"]
       containers:
-      - image: e00049/django:latest
+      - image: us-central1-docker.pkg.dev/e00049-project-workspace/django/django:latest
         name: django
         env:
         - name: BACKEND_SERVER
