@@ -1,0 +1,8 @@
+{
+  "Docker_Hub_Auth": "yes",
+  "Docker_Build_Push": "yes",
+  "GCloud_Auth": "yes",
+  "Fresh_Deploy_Django": "yes",
+  "Update_Deploy_Django": "no"
+}
+

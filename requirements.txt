@@ -1,0 +1,8 @@
+djangorestframework
+djangorestframework-simplejwt
+jsonfield
+sendgrid
+django-rest-swagger
+python-dotenv
+django-cors-headers
+
