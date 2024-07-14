@@ -8,6 +8,14 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    environment: dev
+
+    env:
+      GCLOUD_SERVICE_ACCOUNT: ${{ secrets.GCLOUD_SERVICE_ACCOUNT }}
+      GAR_LOCATION: us-central1 
+      GKE_CLUSTER: cluster-1    
+      GKE_ZONE: us-central1-c   
+  
 
     steps:
     - name: Checkout
@@ -19,8 +27,18 @@ jobs:
       id: read_config
       run: |
         sudo apt-get install -y jq
-        pwd; ls -ll
         config=$(cat config.json | jq -r '. | to_entries | map("\(.key)=\(.value)") | .[]')
         echo "$config" >> $GITHUB_ENV
-        kubectl version --client
-        gcloud version
+    
+    - name: Set up Google Cloud SDK
+      uses: google-github-actions/setup-gcloud@v1
+      with:
+        service_account_key: ${{ secrets.GCLOUD_SERVICE_ACCOUNT }}
+        project_id: e00049-project-workspace
+
+    - name: Authenticate Kubernetes Cluster
+      run: |
+      gcloud container clusters get-credentials cluster-1 --zone us-central1-c --project e00049-project-workspace
+      if [ -f ~/.kube/config ]; then
+       cat ~/.kube/config
+      fi 
