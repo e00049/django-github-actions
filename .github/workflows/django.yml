@@ -9,15 +9,17 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-  steps:
     steps:
     - name: Checkout
-      uses: actions/checkout@v4  
+      uses: actions/checkout@v4
       with:
-        ref: dev            
+        ref: dev
 
     - name: Read Config.JSON file
       id: read_config
       run: |
-        pwd; ls -ll 
-        
+        sudo apt-get install -y jq
+        pwd; ls -ll
+        config=$(cat config.json | jq -r '. | to_entries | map("\(.key)=\(.value)") | .[]')
+        echo "$config"
+        echo "$config" >> $GITHUB_ENV
