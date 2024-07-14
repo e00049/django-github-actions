@@ -39,9 +39,16 @@ jobs:
       with:
         project_id: e00049-project-workspace
 
+    # Get the GKE credentials so we can deploy to the cluster
+    - name: Set up GKE credentials
+      uses: google-github-actions/get-gke-credentials@v0
+      with:
+        cluster_name: ${{ env.GKE_CLUSTER }}
+        location: ${{ env.GKE_ZONE }}
+
+    # gcloud container clusters get-credentials cluster-1 --zone us-central1-c --project e00049-project-workspace
     - name: Authenticate Kubernetes Cluster
       run: |
-        gcloud container clusters get-credentials cluster-1 --zone us-central1-c --project e00049-project-workspace
         if [ -f ~/.kube/config ]; then
           cat ~/.kube/config
         fi
